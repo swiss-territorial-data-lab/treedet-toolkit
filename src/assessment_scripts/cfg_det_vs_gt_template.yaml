@@ -11,7 +11,7 @@ input_files: # input files must be readable by GeoPandas
     - fullpath_to_file5>
     - <fullpath_to_file6>
     - ...
-output_files:
+output_files: # GeoPackage is used as output format
   tagged_gt_trees: <fullpath_to_file7>
   tagged_detections: <fullpath_to_file8>
 settings:
