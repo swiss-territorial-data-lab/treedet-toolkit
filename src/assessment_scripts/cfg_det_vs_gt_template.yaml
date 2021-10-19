@@ -1,0 +1,19 @@
+input_files: # input files must be readable by GeoPandas
+  gt_sectors:
+    - <fullpath_to_file1>
+    - <fullpath_to_file2>
+    - ...
+  gt_trees:
+    - <fullpath_to_file3>
+    - <fullpath_to_file4>
+    - ...
+  dete<ctions:
+    - fullpath_to_file5>
+    - <fullpath_to_file6>
+    - ...
+output_files:
+  tagged_gt_trees: <fullpath_to_file7>
+  tagged_detections: <fullpath_to_file8>
+settings:
+  gt_sectors_buffer_size_in_meters: <ex. 1.0>
+  tolerance_in_meters: <ex. 1.0>
