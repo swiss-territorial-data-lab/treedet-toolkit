@@ -7,7 +7,7 @@ input_files: # input files must be readable by GeoPandas
     - <fullpath_to_file3>
     - <fullpath_to_file4>
     - ...
-  dete<ctions:
+  detections:
     - fullpath_to_file5>
     - <fullpath_to_file6>
     - ...
