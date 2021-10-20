@@ -2,6 +2,23 @@
 
 This repository hosts a collection of tools which were developed by the [STDL](https://www.stdl.ch/) within the frame of the Isolated Tree Detection Project.
 
+## Requirements
+
+This toolkit was tested with Python 3.8. Provided that the `conda` executable is available (we recommend using [Miniconda](https://docs.conda.io/en/latest/miniconda.html)), the following commands allow one to set up a suitable virtual environment:
+
+```bash
+$ conda create -n <the name of the virtual env> -c conda-forge python=3.8
+$ conda activate <the name of the virtual env>
+$ conda install --file requirements.txt
+```
+
+On Windows 10, we faced an ``ImportError: DLL load failed while importing'' error which could be fixed by issuing the following two extra commands:
+
+```bash
+$ pip uninstall pyproj && pip install pyproj
+$ conda install --file requirements.txt
+```
+
 ## Assessment Scripts
 
 ### `src/assessment_scripts/det_vs_gt.py`
