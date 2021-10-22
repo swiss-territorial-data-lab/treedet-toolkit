@@ -3,11 +3,11 @@ input_files: # input files must be readable by GeoPandas (e.g.: ESRI Shapefile, 
     - <fullpath_to_file1>
     - <fullpath_to_file2>
     - ...
-  gt_trees: 1+ files including the geometry of GT trees (points) - the script concatenates the provided files
+  gt_trees: # 1+ files including the geometry of GT trees (points) - the script concatenates the provided files
     - <fullpath_to_file3>
     - <fullpath_to_file4>
     - ...
-  detections: 1+ including the geometry of detectins (points) - the script concatenates the provided files
+  detections: # 1+ including the geometry of detectins (points) - the script concatenates the provided files
     - <fullpath_to_file5>
     - <fullpath_to_file6>
     - ...
