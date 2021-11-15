@@ -35,3 +35,22 @@ $ python det_vs_gt.py <the configuration file (YAML format)>
 ```
 
 The configuration file must comply with the [provided template](src/assessment_scripts/cfg_det_vs_gt_template.yaml), which is self-explanatory.
+
+## Data transformation scripts
+
+### `src\data_transformers\terrascan_txt_to_gpkg.py`
+
+This script turns TerraScan TXT output files into GeoPackages. Input files must comply to the following requirements:
+
+* values must be comma-separated
+* values must be arranged according to the following sequence: `Group id`, `Point count`, `Average easting`, `Average northing`, `Average z`, `Ground z at average xy`, `Trunk easting`, `Trunk northing`, `Trunk ground z`, `Trunk diameter`, `Canopy width`,`Biggest distance`, `Smallest distance`, `Length`, `Width`, `Height`
+
+The script produces a couple of GeoPackage files: one in which XY geometries stem from the `Average easting` and `Average northing` fields; another one in which XY geometries stems from the `Trunk easting` and `Trunk northing` fields.
+
+#### How-to
+
+The script requires some input arguments. The list and description of such arguments can be obtained as follows: 
+
+```bash
+$ python terrascan_txt_to_gpkg.py -h
+```
