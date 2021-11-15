@@ -12,8 +12,9 @@ input_files: # input files must be readable by GeoPandas (e.g.: ESRI Shapefile, 
     - <fullpath_to_file6>
     - ...
 output_files: # GeoPackage is used as output format
-  tagged_gt_trees: <fullpath_to_file7> # the script tags GT trees either as True Positive (TP) of False Negative (FN)
-  tagged_detections: <fullpath_to_file8> # the script tags detections either as True Positive (TP) of False Positive (FP)
+  tagged_gt_trees: <fullpath_to_file7> # the script assigns True Positive (TP) or False Negative (FN) "charges" to GT trees
+  tagged_detections: <fullpath_to_file8> # the script assigns True Positive (TP) or False Positive (FP) "charges" to detections
+  metrics: <fullpath_to_file9> # the script will write metrics to this CSV file
 settings:
   gt_sectors_buffer_size_in_meters: <ex. 1.0> # GT sectors are "augmented" by a buffer having this size (in meters)
   tolerance_in_meters: <ex. 1.0> # GT trees and detected are considered to match if their distance is <= this tolerance (in meters)
