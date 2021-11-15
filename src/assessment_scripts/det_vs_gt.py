@@ -36,6 +36,7 @@ class RequiredOutputFiles(BaseModel):
 
     tagged_gt_trees: str
     tagged_detections: str
+    metrics: str
 
 class RequiredSettings(BaseModel):
 
@@ -176,9 +177,15 @@ if __name__ == "__main__":
     logger.info("<- ...done.")
 
     logger.info("-> Computing metrics...")
+
+    metrics_df = pd.DataFrame()
+
     logger.info("--> Global metrics")
     metrics = assess(tagged_gt_gdf, tagged_dets_gdf)
-    print(", ".join([f"{k} = {v:8.3f}" for k, v in metrics.items()]))
+
+    tmp_df = pd.DataFrame.from_records([{'sector': 'ALL', **metrics}])
+    metrics_df = pd.concat([metrics_df, tmp_df])
+
     logger.info("<-- ...done.")
 
     logger.info("--> Per sector metrics")
@@ -187,9 +194,9 @@ if __name__ == "__main__":
             tagged_gt = tagged_gt_gdf[tagged_gt_gdf.sector == sector],
             tagged_dets = tagged_dets_gdf[tagged_dets_gdf.sector == sector],
         )
-        print(f"sector = {sector}")
-        print(", ".join([f"{k} = {v:8.3f}" for k, v in metrics.items()]))
-        print()
+        tmp_df = pd.DataFrame.from_records([{'sector': sector, **metrics}])
+        metrics_df = pd.concat([metrics_df, tmp_df])
+
     logger.info("<-- ...done.")
     logger.info("<- ...done.")
     logger.info("< ...done.")
@@ -197,9 +204,14 @@ if __name__ == "__main__":
     logger.info("> Generating output files...")
     tagged_gt_gdf.astype({'TP_charge': 'str', 'FN_charge': 'str'}).to_file(parsed_cfg.output_files.tagged_gt_trees, driver='GPKG')
     tagged_dets_gdf.astype({'TP_charge': 'str', 'FP_charge': 'str'}).to_file(parsed_cfg.output_files.tagged_detections, driver='GPKG')
+    metrics_df.to_csv(parsed_cfg.output_files.metrics, sep=',', index=False)
     logger.info("< ...done. The following files were generated:")
     for out_file in parsed_cfg.output_files:
         logger.info(out_file[1])
     
     toc = time.time()
     logger.info(f"...done in {toc-tic:.2f} seconds.")
+
+    print()
+    print("Metrics:")
+    print(metrics_df)
