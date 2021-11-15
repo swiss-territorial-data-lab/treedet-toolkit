@@ -15,7 +15,7 @@ current_path = os.path.abspath(getsourcefile(lambda:0))
 current_dir = os.path.dirname(current_path)
 parent_dir = current_dir[:current_dir.rfind(os.path.sep)]
 sys.path.insert(0, parent_dir)
-from lib.misc import geohash, clip, tag, assess
+from lib.misc import geohash, clip, legacy_tag, legacy_assess
 
 
 class RequiredInputFiles(BaseModel):
@@ -59,34 +59,18 @@ class Configuration(BaseModel):
 def file_loader(files):
 
     acc_gdf = gpd.GeoDataFrame() # accumulator
-
-    crs = None # init
     for _file in files:
-        # TODO: check schema  
+        # TODO: check CRS and schema  
         tmp_gdf = gpd.read_file(_file) 
-        if crs is None:
-            crs = tmp_gdf.crs
-        else:
-            if tmp_gdf.crs != crs:
-                logger.critical("Input datasets have mismatching CRS. Exiting.")
-                sys.exit(1)
         acc_gdf = pd.concat([acc_gdf, tmp_gdf])
 
     gdf = gpd.GeoDataFrame(acc_gdf)
-    gdf = gdf.set_crs(crs)
-
     return gdf.reset_index(drop=True)
 
-def add_geohash(gdf, prefix=None, suffix=None):
+def add_geohash(gdf):
 
     out_gdf = gdf.copy()
     out_gdf['geohash'] = gdf.to_crs(epsg=4326).apply(geohash, axis=1)
-
-    if prefix is not None:
-        out_gdf['geohash'] = prefix + out_gdf['geohash'].astype(str)
-
-    if suffix is not None:
-        out_gdf['geohash'] = out_gdf['geohash'].astype(str) + suffix
 
     return out_gdf
 
@@ -143,8 +127,7 @@ if __name__ == "__main__":
     logger.info("<- ...done.")
 
     logger.info("-> Geohashing GT trees...")
-    GT_PREFIX= 'gt_'
-    gt_trees_gdf = add_geohash(gt_trees_gdf, prefix=GT_PREFIX)
+    gt_trees_gdf = add_geohash(gt_trees_gdf)
     logger.info("<- ...done.")
 
     logger.info("-> Dropping duplicates in GT trees...")
@@ -152,8 +135,7 @@ if __name__ == "__main__":
     logger.info("<- ...done.")
 
     logger.info("-> Geohashing detections...")
-    DETS_PREFIX = "dt_"
-    dets_gdf = add_geohash(dets_gdf, prefix=DETS_PREFIX)
+    dets_gdf = add_geohash(dets_gdf)
     logger.info("<- ...done.")
 
     logger.info("-> Dropping duplicates in detections...")
@@ -172,31 +154,29 @@ if __name__ == "__main__":
     logger.info("> Assessing detections...")
     logger.info("-> Tagging GT trees and detections (True Positives, False Positives, False Negatives)...")
     tolerance_m = parsed_cfg.settings.tolerance_in_meters
-    tagged_gt_gdf, tagged_dets_gdf = tag(gt=gt_trees_gdf, dets=dets_gdf, tol_m=tolerance_m, gt_prefix=GT_PREFIX, dets_prefix=DETS_PREFIX)
+    tagged_gt_gdf, tagged_dets_gdf = legacy_tag(gt=gt_trees_gdf, preds=dets_gdf, tol=tolerance_m)
     logger.info("<- ...done.")
 
     logger.info("-> Computing metrics...")
     logger.info("--> Global metrics")
-    metrics = assess(tagged_gt_gdf, tagged_dets_gdf)
-    print(", ".join([f"{k} = {v:8.3f}" for k, v in metrics.items()]))
+    metrics = legacy_assess(tagged_gt_gdf, tagged_dets_gdf)
+    print(",".join([f"{k}={v:.3f}" for k, v in metrics.items()]))
     logger.info("<-- ...done.")
 
     logger.info("--> Per sector metrics")
     for sector in sorted(gt_sectors_gdf.sector.unique()):
-        metrics = assess(
+        metrics = legacy_assess(
             tagged_gt = tagged_gt_gdf[tagged_gt_gdf.sector == sector],
             tagged_dets = tagged_dets_gdf[tagged_dets_gdf.sector == sector],
         )
-        print(f"sector = {sector}")
-        print(", ".join([f"{k} = {v:8.3f}" for k, v in metrics.items()]))
-        print()
+        print(",".join([f"sector={sector}"] + [f"{k}={v:.3f}" for k, v in metrics.items()]))
     logger.info("<-- ...done.")
     logger.info("<- ...done.")
     logger.info("< ...done.")
 
     logger.info("> Generating output files...")
-    tagged_gt_gdf.astype({'TP_charge': 'str', 'FN_charge': 'str'}).to_file(parsed_cfg.output_files.tagged_gt_trees, driver='GPKG')
-    tagged_dets_gdf.astype({'TP_charge': 'str', 'FP_charge': 'str'}).to_file(parsed_cfg.output_files.tagged_detections, driver='GPKG')
+    tagged_gt_gdf.to_file(parsed_cfg.output_files.tagged_gt_trees, driver='GPKG')
+    tagged_dets_gdf.to_file(parsed_cfg.output_files.tagged_detections, driver='GPKG')
     logger.info("< ...done. The following files were generated:")
     for out_file in parsed_cfg.output_files:
         logger.info(out_file[1])

@@ -4,3 +4,4 @@ geopandas==0.10.2
 logzero==1.7.0
 pydantic==1.8.2
 pygeohash==1.2.0
+networkx==2.6.3
