@@ -7,6 +7,7 @@ This repository hosts a collection of tools which were developed by the [STDL](h
 This toolkit was tested with Python 3.8. Provided that the `conda` executable is available (we recommend using [Miniconda](https://docs.conda.io/en/latest/miniconda.html)), the following commands allow one to set up a suitable virtual environment:
 
 ```bash
+$ conda config --add channels conda-forge
 $ conda create -n <the name of the virtual env> -c conda-forge python=3.8
 $ conda activate <the name of the virtual env>
 $ conda install --file requirements.txt
