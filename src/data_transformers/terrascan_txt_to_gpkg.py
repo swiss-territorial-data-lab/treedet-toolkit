@@ -66,17 +66,17 @@ if __name__ == "__main__":
     tic = time.time()
     logger.info("Starting...")
     
-    parser = argparse.ArgumentParser(description="This script parses TerraScan TXT output file into GeoPackage files.")
+    parser = argparse.ArgumentParser(description="This script turns TerraScan TXT output files into GeoPackage files.")
     parser.add_argument('--input-file', dest='in_file', type=str, help='input file')
     parser.add_argument('--output-folder', dest='out_folder', type=str, help='output folder')
     parser.add_argument('--epsg', dest='epsg', type=str, help='EPSG (ex.: 2056)')
 
     args = parser.parse_args()
-    epsg = args.epsg
+    epsg = args.epsg if args.epsg is not None else '2056'
     in_file = args.in_file
     out_folder = args.out_folder
 
-    if any([x is None for x in [in_file, out_folder, epsg]]):
+    if any([x is None for x in [in_file, out_folder]]):
         logger.critical("Invalid arguments. Exiting.")
         sys.exit(1)
     
