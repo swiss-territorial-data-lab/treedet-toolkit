@@ -5,6 +5,8 @@ If for some reason you cannot import the tool, you may create another one, link 
 
 ![image](https://user-images.githubusercontent.com/93572721/142226467-7bf06b84-4fbc-48f9-aa50-1311c6558d85.png)
 
+For inputs 7 and 8, make sure you have selected the option to add multiple files for those particular inputs, by ticking the "Multiple values" checkbox.
+
 Run the tool in arcgis, and you should get a bunch of .yaml files in your selected output folder.
 
 You can then use batchEv.py (inside the batch_processing folder) to run the detection algorithm on all of these .yaml config files all at once.
