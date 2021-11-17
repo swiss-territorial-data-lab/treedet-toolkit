@@ -9,6 +9,9 @@ For inputs 7 and 8, make sure you have selected the option to add multiple files
 
 Run the tool in arcgis, and you should get a bunch of .yaml files in your selected output folder.
 
+![image](https://user-images.githubusercontent.com/93572721/142234654-58794821-7520-40d2-9450-b30be977f311.png)
+
+
 You can then use batchEv.py (inside the batch_processing folder) to run the detection algorithm on all of these .yaml config files all at once.
 
 Use the same virtual environment, except this time you simply input the "python batchEv.py" command. No additional argument. You have to be inside the "batch_processing" folder. You will then be prompted for the folder where all the .yaml files you wish to process are located.
