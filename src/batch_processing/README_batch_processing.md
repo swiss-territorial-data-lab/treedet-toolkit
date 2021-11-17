@@ -1,4 +1,4 @@
-First use the toolbox provided, you may add it to any ArcGis Proproject.
+First use the toolbox provided, you may add it to any ArcGis Pro project.
 
 Inside the toolbox, you will find the "detectFiles" script, it should be linked to the "detectFiles.py" python script.
 If for some reason you cannot import the tool, you may create another one, link it to the python script, and set the following parameters, (the order matters)
