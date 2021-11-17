@@ -99,17 +99,13 @@ def drop_duplicates(gdf):
     return out_gdf
     
 
-if __name__ == "__main__":
+def main(config_file):
 
     tic = time.time()
     logger.info("Starting...")
-    
-    parser = argparse.ArgumentParser(description="This script assesses the quality of detections with respect to ground-truth data.")
-    parser.add_argument('config_file', type=str, help='a YAML config file')
-    args = parser.parse_args()
-
+   
     logger.info("> Loading configuration file...")
-    with open(args.config_file) as fp:
+    with open(config_file) as fp:
         cfg = yaml.load(fp, Loader=yaml.FullLoader)#[os.path.basename(__file__)]
     logger.info("< ...done.")
 
@@ -215,3 +211,12 @@ if __name__ == "__main__":
     print()
     print("Metrics:")
     print(metrics_df)
+
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(description="This script assesses the quality of detections with respect to ground-truth data.")
+    parser.add_argument('config_file', type=str, help='a YAML config file')
+    args = parser.parse_args()
+
+    main(args.config_file)
