@@ -38,7 +38,7 @@ The configuration file must comply with the [provided template](src/assessment_s
 
 ## Data transformation scripts
 
-### `src/data_transformers/terrascan_txt_to_gpkg.py`
+### `src/data_transformers/ts_txt_to_gpkg.py`
 
 This script turns TerraScan TXT output files into GeoPackages. Input files must comply to the following requirements:
 
@@ -52,12 +52,27 @@ The script produces a couple of GeoPackage files: one in which XY geometries ste
 The script requires some input arguments. The list and description of such arguments can be obtained as follows: 
 
 ```bash
-$ python terrascan_txt_to_gpkg.py -h
+$ python ts_txt_to_gpkg.py -h
 ```
 
 ### `src/data_transformers/gis_to_las.py`
 
-[...]
+This script generate a LAS file out of any GIS file readable by GeoPandas (SHP, GeoPackage, GeoJSON, ...). It implements some opinions which hold in the frame of the STDL TreeDet Project:
+
+* the input file must concern the territory of the Canton of Geneva, for which a DEM is accessible through a Web Service (the URL and query string are hard-coded in the script).
+* Output z coordinates are set according to the DEM. A +1 m offset is added.
+* The input file should include the columns `group_id`, `TP_charge` and `FP_charge`/`FN_charge`. Values along these columns are copied to the output LAS.
+* Polygonal geometries are summarized by their centroid.
+* The following colors are used:
+
+    | Color  | (R, G, B)     | Used for              |  
+    | ------ | ------------- | --------------------- |
+    | Red    | (255, 0, 0)   | True Positives (TPs)  | 
+    | Blue   | (0, 0, 255)   | False Negatives (FNs) |
+    | Orange | (255, 127, 0) | False Positives (FPs) |
+    | Yellow | (255, 255, 0) | Unknown               | 
+
+    For mixed TP/FP or TP/FN items, the above base colors are weighted by the charge. For instance, if `TP_charge = 1/4` and `FN_charge = 3/4`, then the item will have the color `(63, 0, 191) = 1/4 x (255, 0, 0) + 3/4 x (0, 0, 255)`.
 
 #### How-to
 
