@@ -38,7 +38,7 @@ The configuration file must comply with the [provided template](src/assessment_s
 
 ## Data transformation scripts
 
-### `src\data_transformers\terrascan_txt_to_gpkg.py`
+### `src/data_transformers/terrascan_txt_to_gpkg.py`
 
 This script turns TerraScan TXT output files into GeoPackages. Input files must comply to the following requirements:
 
@@ -53,4 +53,16 @@ The script requires some input arguments. The list and description of such argum
 
 ```bash
 $ python terrascan_txt_to_gpkg.py -h
+```
+
+### `src/data_transformers/gis_to_las.py`
+
+[...]
+
+#### How-to
+
+The script requires some input arguments. The list and description of such arguments can be obtained as follows: 
+
+```bash
+$ python gis_to_las.py -h
 ```
