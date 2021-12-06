@@ -73,6 +73,12 @@ def gdf_to_las(gdf, z_offset_m):
     header.scales = np.array([1.0, 1.0, 1.0])
     if "group_id" in gdf.columns.tolist():
         header.add_extra_dim(laspy.ExtraBytesParams(name="group_id", type=np.int32))
+    if "TP_charge" in gdf.columns.tolist():
+        header.add_extra_dim(laspy.ExtraBytesParams(name="TP_charge", type=float))
+    if "FP_charge" in gdf.columns.tolist():
+        header.add_extra_dim(laspy.ExtraBytesParams(name="FP_charge", type=float))
+    if "FN_charge" in gdf.columns.tolist():
+        header.add_extra_dim(laspy.ExtraBytesParams(name="FN_charge", type=float))
 
     # 2. Create a Las
     las = laspy.LasData(header)
@@ -82,6 +88,13 @@ def gdf_to_las(gdf, z_offset_m):
     las.z = gdf.z + z_offset_m
     if "group_id" in gdf.columns.tolist():
         las.group_id = gdf.group_id.fillna(-1).astype(np.int32)
+
+    if "TP_charge" in gdf.columns.tolist():
+        las.TP_charge = gdf.TP_charge.fillna(-1).map(Fraction).astype(float)
+    if "FP_charge" in gdf.columns.tolist():
+        las.FP_charge = gdf.FP_charge.fillna(-1).map(Fraction).astype(float)
+    if "FN_charge" in gdf.columns.tolist():
+        las.FN_charge = gdf.FN_charge.fillna(-1).map(Fraction).astype(float)
     
     las.red = gdf.r
     las.green = gdf.g
@@ -121,7 +134,7 @@ if __name__ == "__main__":
     gdf = gdf.apply(add_rgb, axis=1)
     logger.info("< ...done.")
 
-    logger.info("> Fetching z coordinates from remote MNT...")
+    logger.info("> Fetching z coordinates from remote DEM...")
     gdf_with_z = gdf.progress_apply(add_z, axis=1)
     logger.info("< ...done.")
 
