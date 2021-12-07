@@ -70,7 +70,22 @@ def add_rgb(row):
 
     return row
 
-def gdf_to_las(gdf, z_offset_m):
+
+def add_z_offset(row):
+
+    if ('FP_charge' in row) and ('TP_charge' in row):
+        # det
+        row['z_offset'] = 2.0
+    elif ('FN_charge' in row) and ('TP_charge' in row):
+        # GT
+        row['z_offset'] = 1.0
+    else:
+        row['z_offset'] = 0.0
+
+    return row
+
+
+def gdf_to_las(gdf):
 
     header = laspy.LasHeader(point_format=2, version="1.4") # cf. https://laspy.readthedocs.io/en/latest/intro.html
     header.offsets = [gdf.x.min(), gdf.y.min(), gdf.z.min()]
@@ -89,7 +104,7 @@ def gdf_to_las(gdf, z_offset_m):
 
     las.x = gdf.x
     las.y = gdf.y
-    las.z = gdf.z + z_offset_m
+    las.z = gdf.z + gdf.z_offset
     if "group_id" in gdf.columns.tolist():
         las.group_id = gdf.group_id.fillna(-1).astype(np.int32)
 
@@ -144,8 +159,13 @@ if __name__ == "__main__":
     gdf_with_z = gdf.progress_apply(add_z, axis=1)
     logger.info("< ...done.")
 
+    logger.info("> Computing offset along the z-coordinate...")
+    gdf_with_z = gdf_with_z.apply(add_z_offset, axis=1)
+    logger.info("< ...done.")
+
     logger.info("> Generating LAS...")
-    las = gdf_to_las(gdf_with_z, z_offset_m=1)
+    las = gdf_to_las(gdf_with_z)
+    assert len(las) == len(gdf)
     out_filename = f"{in_filename}.las"
     out_file = os.path.join(out_folder, out_filename)
     las.write(out_file)
