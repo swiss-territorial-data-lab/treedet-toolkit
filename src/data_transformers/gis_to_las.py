@@ -16,10 +16,12 @@ tqdm.pandas()
 
 
 # CONSTANTS
-TP_RGB = (255, 0, 0)
-FP_RGB = (255, 127, 0)
-FN_RGB = (0, 0, 255)
-DEFAULT_RGB = (255, 255, 0)
+BRIGHT_GREEN = (102, 255, 0)
+BUD_GREEN = (123, 182, 97)
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
+GRAY = (128, 128, 128)
+
 LAS_CLASS = 17
 
 
@@ -58,11 +60,13 @@ def add_z(row):
 def add_rgb(row):
     
     if ('FP_charge' in row) and ('TP_charge' in row):
-        row['r'], row['g'], row['b'] = (Fraction(row.FP_charge) * np.array(FP_RGB) + Fraction(row.TP_charge) * np.array(TP_RGB)).astype(np.int32)
+        # det
+        row['r'], row['g'], row['b'] = (Fraction(row.FP_charge) * np.array(RED) + Fraction(row.TP_charge) * np.array(BUD_GREEN)).astype(np.int32)
     elif ('FN_charge' in row) and ('TP_charge' in row):
-        row['r'], row['g'], row['b'] = (Fraction(row.FN_charge) * np.array(FN_RGB) + Fraction(row.TP_charge) * np.array(TP_RGB)).astype(np.int32)
+        # GT
+        row['r'], row['g'], row['b'] = (Fraction(row.FN_charge) * np.array(BLUE) + Fraction(row.TP_charge) * np.array(BRIGHT_GREEN)).astype(np.int32)
     else:
-        row['r'], row['g'], row['b'] = DEFAULT_RGB
+        row['r'], row['g'], row['b'] = GRAY
 
     return row
 
