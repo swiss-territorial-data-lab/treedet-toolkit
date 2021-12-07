@@ -20,6 +20,7 @@ TP_RGB = (255, 0, 0)
 FP_RGB = (255, 127, 0)
 FN_RGB = (0, 0, 255)
 DEFAULT_RGB = (255, 255, 0)
+LAS_CLASS = 17
 
 
 def file_loader(full_path):
@@ -67,8 +68,7 @@ def add_rgb(row):
 
 def gdf_to_las(gdf, z_offset_m):
 
-    # 1. Create a new header
-    header = laspy.LasHeader(point_format=3, version="1.2") # cf. https://laspy.readthedocs.io/en/latest/intro.html
+    header = laspy.LasHeader(point_format=2, version="1.4") # cf. https://laspy.readthedocs.io/en/latest/intro.html
     header.offsets = [gdf.x.min(), gdf.y.min(), gdf.z.min()]
     header.scales = np.array([1.0, 1.0, 1.0])
     if "group_id" in gdf.columns.tolist():
@@ -79,8 +79,8 @@ def gdf_to_las(gdf, z_offset_m):
         header.add_extra_dim(laspy.ExtraBytesParams(name="FP_charge", type=float))
     if "FN_charge" in gdf.columns.tolist():
         header.add_extra_dim(laspy.ExtraBytesParams(name="FN_charge", type=float))
+    
 
-    # 2. Create a Las
     las = laspy.LasData(header)
 
     las.x = gdf.x
@@ -99,6 +99,8 @@ def gdf_to_las(gdf, z_offset_m):
     las.red = gdf.r
     las.green = gdf.g
     las.blue = gdf.b
+
+    las.classification = [LAS_CLASS]*len(gdf)
     
     return las
 
