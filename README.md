@@ -67,10 +67,11 @@ This script generate a LAS file out of any GIS file readable by GeoPandas (SHP, 
 
     | Color  | (R, G, B)     | Used for              |  
     | ------ | ------------- | --------------------- |
-    | Red    | (255, 0, 0)   | True Positives (TPs)  | 
-    | Blue   | (0, 0, 255)   | False Negatives (FNs) |
-    | Orange | (255, 127, 0) | False Positives (FPs) |
-    | Yellow | (255, 255, 0) | Unknown               | 
+    | Bright Green | (102, 255, 0) | True Positive (TP) GT trees | 
+    | Bud Green | (123, 182, 97) | True Positive (TP) detections |
+    | Blue | (255, 0, 0) | False Negative (FN) GT trees |
+    | Red | (255, 0, 0) | False Positive (FP) detections |
+    | Gray | (128, 128, 128) | Unknown | 
 
     For mixed TP/FP or TP/FN items, the above base colors are weighted by the charge. For instance, if `TP_charge = 1/4` and `FN_charge = 3/4`, then the item will have the color `(63, 0, 191) = 1/4 x (255, 0, 0) + 3/4 x (0, 0, 255)`.
 
