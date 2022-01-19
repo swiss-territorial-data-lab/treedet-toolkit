@@ -181,10 +181,10 @@ def main(config_file):
     for k, v in _gdf.items():
         v['geometry'] = v['geometry'].centroid
 
-    _gdf['A_matched'].to_file(parsed_cfg.output_files.matched_run_A_detections, driver='GPKG')
-    _gdf['B_matched'].to_file(parsed_cfg.output_files.matched_run_B_detections, driver='GPKG')
-    _gdf['A_unmatched'].to_file(parsed_cfg.output_files.unmatched_run_A_detections, driver='GPKG')
-    _gdf['B_unmatched'].to_file(parsed_cfg.output_files.unmatched_run_B_detections, driver='GPKG')
+    _gdf['A_matched'][gdf['A'].columns].to_file(parsed_cfg.output_files.matched_run_A_detections, driver='GPKG')
+    _gdf['B_matched'][gdf['B'].columns].to_file(parsed_cfg.output_files.matched_run_B_detections, driver='GPKG')
+    _gdf['A_unmatched'][gdf['A'].columns].to_file(parsed_cfg.output_files.unmatched_run_A_detections, driver='GPKG')
+    _gdf['B_unmatched'][gdf['B'].columns].to_file(parsed_cfg.output_files.unmatched_run_B_detections, driver='GPKG')
     
     logger.info("< ...done. The following files were generated:")
     for out_file in parsed_cfg.output_files:
