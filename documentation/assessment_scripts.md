@@ -31,7 +31,7 @@ in the most trivial case:
 <p align="center">
 <img src="./img/STDL-TreeDet-AssessmentScript-TaggingInTheMostTrivialCase.svg" alt="Tagging detections and ground truth trees in the most trivial case"/>
 <br />
-<i>Tagging as True Positive (TP), False Positive (FP), False Negative (FN) ground truth and detected trees in the most trivial case.</i>
+<i>Fig. 1 - Tagging as True Positive (TP), False Positive (FP), False Negative (FN) ground truth and detected trees in the most trivial case.</i>
 </p>
 
 Actually, far less trivial cases can arise, such as the one illustrated by the following image:
@@ -39,7 +39,7 @@ Actually, far less trivial cases can arise, such as the one illustrated by the f
 <p align="center">
 <img src="./img/STDL-TreeDet-AssessmentScript-ComplexCase.svg" alt="Tagging detections and ground truth trees in the most trivial case"/>
 <br />
-<i>Only one detection can exist for two candidate ground truth trees, or else two detections can exist for only one candidate ground truth tree.</i>
+<i>Fig. 2 - Only one detection can exist for two candidate ground truth trees, or else two detections can exist for only one candidate ground truth tree.</i>
 </p>
 
 The STDL designed and implemented an algorithm, which would produce relevant TP, FP, FN tags and counts even in such more complex cases. For instance, in a setting like the one in the image here above, one would expect the algorithm to count 2 TPs, 1 FP, 1 FN.
@@ -73,8 +73,7 @@ In both cases, the "intersects" operation is used (cf.&nbsp;[this page](https://
 
 ### 4th step: tag trivial False Positives and False Negatives
 
-All those detections output by the left outer join for which no right attribute exists (in particular, we focus on the right geohash) can trivially be tagged as FPs. As a matter of fact, this means that the 1 m circular buffer surrounding the detection does not intersect any ground truth tree; in other words, that no ground truth tree can be found within 1 m from the detection. The same reasoning leads to trivially tagging as FNs all those ground truth trees output by the right outer join for which no left attribute exists.
-
+All those detections output by the left outer join for which no right attribute exists (in particular, we focus on the right geohash) can trivially be tagged as FPs. As a matter of fact, this means that the 1 m circular buffer surrounding the detection does not intersect any ground truth tree; in other words, that no ground truth tree can be found within 1 m from the detection. The same reasoning leads to trivially tagging as FNs all those ground truth trees output by the right outer join for which no left attribute exists. These cases correspond to the two rightmost items in Fig.&nbsp;1.
 
 For reasons which will be clarified here below, the algorithm does not actually tag items as either FPs or FNs; instead, 
 
@@ -95,4 +94,62 @@ Here's how:
     |-----------|-----------| 
     | 0         | 1         |
 
-### 5th step: ...
+### 5th step: tag non-trivial False Positives and False Negatives
+
+The left outer spatial join performed at step 3 establishes relations between each detection and those ground truth trees which are located no further than 1 meter, as depicted by the following image:
+
+<p align="center">
+<img src="./img/STDL-TreeDet-AssessmentScript-GraphComponents.svg" alt="Tagging detections and ground truth trees in the most trivial case"/>
+<br />
+<i>Fig. 3 - The spatial join between buffered detections and ground truth trees establishes relations between groups of items of these two populations. In the sample setting depicted in this picture, two unrelated groups can be found. </i>
+</p>
+
+The example here above shows 4 relations,
+
+1. D1 - GT1,
+2. D1 - GT2,
+3. D2 - GT3,
+4. D3 - GT3
+
+which can be split (see the red dashed line) into two unrelated, independent groups:
+
+1. {D1 - GT1, D1 - GT2}
+2. {D2 - GT3, D3 - GT3}
+
+In order to generate this kind of groups in a programmatic way, the algorithm first builds a graph out of the relations established by the left outer spatial join, then it extracts the connected components of such a graph (cf.&nbsp;[this page](https://en.wikipedia.org/wiki/Component_(graph_theory))).
+
+The tagging and counting of TPs, FPs, FNs is performed on a per-group basis, according to the following strategy:
+
+* if a group contains more ground truth than detected trees, then the group is assigned an excess FN "charge", equal to the difference between the number of ground truth trees and detected trees. This excess charge is then divided by the number of ground truth trees and the result assigned to each of them. For instance, the {D1 - GT1, D1 - GT2} group in the image here above would be assigned an FN "charge" equal to 1; each ground truth tree would be assigned an FN charge equal to 1/2.  
+
+* Similarly, if a group contains more detected trees than ground truth trees, then the group is assigned an excess "FP charge", equal to the difference between the number of detected trees and ground truth trees. This excess charge is then divided by the number of detections and the result assigned to each of them. For instance, the {D2 - GT3, D3 - GT3} group in the image here above would be assigned an excess FN "charge" equal to 1; each detection would be assigned an FP charge equal to 1/2.
+
+* In case the number of ground truth trees be the same as the number of detections, no excess FN/FP charge is assigned to the group.
+
+* Concerning the assignment of TP charges, the per-group budget is established as the minimum between the number of ground truth and detected trees, then equally split between the items of these two populations. In the example above, both groups have TP charge = 1.
+
+Wrapping things up, here are the charges which the algorithm would assign to the various items of the example here above: 
+
+| item     | TP charge | FP charge | Total charge |
+| -------- | --------- | --------- | ------------ |
+| D1       | 1         | 0         | 1            |
+| D2       | 1/2       | 1/2       | 1            |
+| D3       | 1/2       | 1/2       | 1            |
+| **Sum**  | **2**     | **1**     | **3**        |
+
+
+| item     | TP charge | FN charge | Total charge |
+| -------- | --------- | --------- | ------------ |
+| GT1      | 1/2       | 1/2       | 1            |
+| GT2      | 1/2       | 1/2       | 1            |
+| GT3      | 1         | 0         | 1            |
+| **Sum**  | **2**     | **1**     | **3**        |
+
+Let us note that:
+
+* the count of TPs yields the same result, whether we consider detections of ground truth trees, which makes sense;
+* the "Total charge" column allows one to check the consistency of the algorithm;
+* as expected, we obtain 2 FPs, 1 FP, 1 FN;
+* the algorithm does not even attempt to establish 1:1 relations, somehow "optimal", between ground truth and detected trees. As a matter of fact, the algorithm is designed to produce meaningful counts and tags only;
+* of course, the algorithm also works in far more complex settings than the one depicted in Figs.&nbsp;2 and 3.
+
