@@ -28,7 +28,7 @@ The following image shows how such a rule allows one to tag
 in the most trivial case:
 
 <p align="center">
-<img src="./img/STDL-TreeDet-AssessmentScript-TaggingInTheMostTrivialCase.png" alt="Tagging detections and ground truth trees in the most trivial case"/>
+<img src="./img/STDL-TreeDet-AssessmentScript-TaggingInTheMostTrivialCase.svg" alt="Tagging detections and ground truth trees in the most trivial case"/>
 <br />
 <i>Tagging as True Positive (TP), False Positive (FP), False Negative (FN) ground truth and detected trees in the most trivial case.</i>
 </p>
@@ -36,7 +36,7 @@ in the most trivial case:
 Actually, far less trivial cases can arise, such as the one illustrated by the following image:
 
 <p align="center">
-<img src="./img/STDL-TreeDet-AssessmentScript-ComplexCase.png" alt="Tagging detections and ground truth trees in the most trivial case"/>
+<img src="./img/STDL-TreeDet-AssessmentScript-ComplexCase.svg" alt="Tagging detections and ground truth trees in the most trivial case"/>
 <br />
 <i>Only one detection can exist for two candidate ground truth trees, or else two detections can exist for only one candidate ground truth tree.</i>
 </p>
