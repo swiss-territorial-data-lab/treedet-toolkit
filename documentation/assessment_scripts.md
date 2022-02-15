@@ -6,8 +6,9 @@ The STDL used a couple of third-party tools, namely [TerraScan](https://terrasol
 
 1. a segmented point cloud, in which points associated to the same tree share either the same color; 
 2. one (X, Y, Z) triplet per detected tree, where the X, Y, Z coordinates are
-  * computed by averaging... [WHAT? HOW?]
-  * expressed in the same reference system as the input point cloud.
+
+    * computed by averaging... [WHAT? HOW?]
+    * expressed in the same reference system as the input point cloud.
 
 As the ground truth data the STDL was provided with take the form of one (X', Y') pair per tree, with Z' implicitly equal to 1 meter above the ground, the comparison between detections and ground truth trees could only be performed on the common ground of points in 2D space. In other words, we could not assess the 3D point clouds segmentations obtained by either TerraScan or DFT against reference/ground truth segmentations.
 
