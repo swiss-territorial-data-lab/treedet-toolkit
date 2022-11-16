@@ -69,9 +69,6 @@ def file_loader(files):
         # TODO: check schema  
         tmp_gdf = gpd.read_file(_file) 
         
-        # if crs is None:
-        #     crs = tmp_gdf.crs
-        
         if tmp_gdf.crs is None:
             crs = epsg_dft
         else:
