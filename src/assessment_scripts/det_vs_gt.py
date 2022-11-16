@@ -227,8 +227,8 @@ def main(config_file):
 
 if __name__ == "__main__":
 
-     parser = argparse.ArgumentParser(description="This script assesses the quality of detections with respect to ground-truth data.")
-     parser.add_argument('config_file', type=str, help='a YAML config file')
-     args = parser.parse_args()
+    parser = argparse.ArgumentParser(description="This script assesses the quality of detections with respect to ground-truth data.")
+    parser.add_argument('config_file', type=str, help='a YAML config file')
+    args = parser.parse_args()
  
-     main(args.config_file)
+    main(args.config_file)
