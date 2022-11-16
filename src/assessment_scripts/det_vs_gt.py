@@ -46,6 +46,7 @@ class RequiredSettings(BaseModel):
 
     gt_sectors_buffer_size_in_meters: float
     tolerance_in_meters: float
+    crs_dft: str
 
 class Configuration(BaseModel):
 
@@ -61,12 +62,18 @@ def file_loader(files):
 
     acc_gdf = gpd.GeoDataFrame() # accumulator
 
-    crs = None # init
+    #crs = None # init
+    crs = epsg_dft
+    
     for _file in files:
         # TODO: check schema  
         tmp_gdf = gpd.read_file(_file) 
-        if crs is None:
-            crs = tmp_gdf.crs
+        
+        # if crs is None:
+        #     crs = tmp_gdf.crs
+        
+        if tmp_gdf.crs is None:
+            crs = epsg_dft
         else:
             if tmp_gdf.crs != crs:
                 logger.critical("Input datasets have mismatching CRS. Exiting.")
@@ -99,18 +106,26 @@ def drop_duplicates(gdf):
     return out_gdf
     
 
+
 def main(config_file):
 
     tic = time.time()
+    
     logger.info("Starting...")
    
     logger.info("> Loading configuration file...")
+   
     with open(config_file) as fp:
         cfg = yaml.load(fp, Loader=yaml.FullLoader)#[os.path.basename(__file__)]
     logger.info("< ...done.")
 
     logger.info("> Parsing configuration...")
     parsed_cfg = Configuration(**cfg)
+    
+    global epsg_dft 
+    epsg_dft = parsed_cfg.settings.crs_dft
+    
+    
     logger.info("< ...done.")
 
     logger.info("> Loading data...")
@@ -215,8 +230,8 @@ def main(config_file):
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description="This script assesses the quality of detections with respect to ground-truth data.")
-    parser.add_argument('config_file', type=str, help='a YAML config file')
-    args = parser.parse_args()
-
-    main(args.config_file)
+     parser = argparse.ArgumentParser(description="This script assesses the quality of detections with respect to ground-truth data.")
+     parser.add_argument('config_file', type=str, help='a YAML config file')
+     args = parser.parse_args()
+ 
+     main(args.config_file)

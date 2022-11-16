@@ -18,3 +18,4 @@ output_files: # GeoPackage is used as output format
 settings:
   gt_sectors_buffer_size_in_meters: <ex. 1.0> # GT sectors are "augmented" by a buffer having this size (in meters)
   tolerance_in_meters: <ex. 1.0> # GT trees and detected are considered to match if their distance is <= this tolerance (in meters)
+  crs_dft: 'epsg:2056' # CRS that will be added if inputs files have no CRS (by eg. the detections outputs of the DFT have no CRS). 
