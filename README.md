@@ -1,6 +1,6 @@
 # STDL Tree Detection Toolkit
 
-This repository hosts a collection of tools which were developed by the [STDL](https://www.stdl.ch/) within the frame of the Isolated Tree Detection Project.
+This repository hosts a collection of tools which were developed by the [STDL](https://www.stdl.ch/) within the frame of the [Isolated Tree Detection Project](https://tech.stdl.ch/PROJ-TREEDET/).
 
 ## Requirements
 
