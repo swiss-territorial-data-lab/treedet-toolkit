@@ -84,13 +84,11 @@ if __name__ == "__main__":
     df = file_loader(args.in_file)
     logger.info("< ...done.")
 
-    gdf = gpd.GeoDataFrame(df)
-
     logger.info("> Generating geometries...")
-    average_xy_gdf = gdf.apply(lambda row: gen_geometry(row, 'Average easting', 'Average northing'), axis=1)
+    average_xy_gdf = gpd.GeoDataFrame(df.apply(lambda row: gen_geometry(row, 'Average easting', 'Average northing'), axis=1))
     average_xy_gdf = average_xy_gdf.set_crs(epsg=epsg)
 
-    trunk_xy_gdf =  gdf.apply(lambda row: gen_geometry(row, 'Trunk easting', 'Trunk northing'), axis=1)
+    trunk_xy_gdf =  gpd.GeoDataFrame(df.apply(lambda row: gen_geometry(row, 'Trunk easting', 'Trunk northing'), axis=1))
     trunk_xy_gdf =  trunk_xy_gdf.set_crs(epsg=epsg)
     logger.info("< ...done.")
 
